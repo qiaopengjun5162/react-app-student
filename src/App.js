@@ -14,6 +14,8 @@ const App = () => {
   const [studData, setStudData] = useState([]);
   // 添加一个 state 来记录数据是否正在加载中
   const [isLoading, setIsLoading] = useState(false);
+  // 添加一个 state 来记录错误信息
+  const [error, setError] = useState(null);
 
   /*
     组件一渲染需要向服务器发送请求加载数据
@@ -39,7 +41,17 @@ const App = () => {
     setIsLoading(true);
 
     fetch('http://localhost:1337/api/students')
-      .then(res => res.json())
+      .then(res => {
+        // 判断状态码
+        if (res.ok) {
+          // 返回的 res 是一个 Response 对象，需要使用 json() 方法来获取数据
+          return res.json();
+        }
+        setIsLoading(false)
+        // 抛出错误
+        throw new Error('数据加载失败');
+
+      })
       // 获取到数据
       .then(data => {
         console.log(data);
@@ -49,14 +61,22 @@ const App = () => {
         setIsLoading(false);
       })
       .catch(err => {
+        // 设置 loading 为 false
+        setIsLoading(false);
+
+        // 打印错误信息
         console.log(err);
+
+        // 设置错误信息
+        setError(err.message);
       })
   }, [])
 
   return (
     <div className="App">
-      {!isLoading && <StudentList students={studData} />}
+      {(!isLoading && !error) && <StudentList students={studData} />}
       {isLoading && <div>数据正在加载中...</div>}
+      {error && <div>{error}</div>}
     </div>
   )
 }

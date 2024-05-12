@@ -1,10 +1,11 @@
 import React from 'react'
 import Student from './Student'
+import classes from "./StudentList.module.css"
 
 const StudentList = (props) => {
     return (
-        <table>
-            <caption>学生列表</caption>
+        <table className={classes.table}>
+            <caption className={classes.title}>学生列表</caption>
             <thead>
                 <tr>
                     <th>姓名</th>

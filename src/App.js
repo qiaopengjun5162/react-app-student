@@ -1,6 +1,7 @@
-import React, { useEffect, useState } from 'react';
+import React, { useCallback, useEffect, useState } from 'react';
 import './App.css';
 import StudentList from './components/StudentList';
+import StudentContext from './store/StuContext';
 
 // 学生数据
 // const STU_DATA = [
@@ -21,6 +22,24 @@ const App = () => {
     组件一渲染需要向服务器发送请求加载数据
     http://localhost:1337/api/students
   */
+
+  const fetchData = useCallback(async () => {
+    setIsLoading(true);
+    setError(null);
+    try {
+      const res = await fetch('http://localhost:1337/api/students');
+      if (res.ok) {
+        const data = await res.json();
+        setStudData(data.data);
+      } else {
+        throw new Error('数据加载失败');
+      }
+    } catch (err) {
+      setError(err.message);
+    } finally {
+      setIsLoading(false);
+    }
+  }, [])
 
   useEffect(() => {
     /*
@@ -71,32 +90,26 @@ const App = () => {
     //     setError(err.message);
     //   })
 
-    const fetchData = async () => {
-      setIsLoading(true);
-      setError(null);
-      try {
-        const res = await fetch('http://localhost:1337/api/student');
-        if (res.ok) {
-          const data = await res.json();
-          setStudData(data.data);
-        } else {
-          throw new Error('数据加载失败');
-        }
-      } catch (err) {
-        setError(err.message);
-      } finally {
-        setIsLoading(false);
-      }
-    };
-    return fetchData
-  }, [])
+    // return fetchData
+    fetchData();
+  }, [fetchData]);
+
+  // 加载数据按钮的点击事件
+  const handleClick = () => {
+    // 调用 fetchData 函数加载数据
+    fetchData();
+  }
 
   return (
-    <div className="App">
-      {(!isLoading && !error) && <StudentList students={studData} />}
-      {isLoading && <p>数据正在加载中...</p>}
-      {error && <p>数据加载失败...</p>}
-    </div>
+    // 添加一个 StudentContext.Provider 组件，用来传递数据
+    <StudentContext.Provider value={{ fetchData }}>
+      <div className="App">
+        <button onClick={handleClick} className="btn">加载数据</button>
+        {(!isLoading && !error) && <StudentList students={studData} />}
+        {isLoading && <p>数据正在加载中...</p>}
+        {error && <p>数据加载失败...</p>}
+      </div>
+    </StudentContext.Provider>
   )
 }
 

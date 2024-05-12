@@ -12,10 +12,11 @@ const StudentList = (props) => {
                     <th>性别</th>
                     <th>年龄</th>
                     <th>地址</th>
+                    <th>操作</th>
                 </tr>
             </thead>
             <tbody>
-                {props.students.map((student) => <Student key={student.id} student={student.attributes} />)}
+                {props.students.map((student) => <Student key={student.id} student={student} />)}
             </tbody>
         </table>
     )

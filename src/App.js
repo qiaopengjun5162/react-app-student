@@ -3,15 +3,18 @@ import './App.css';
 import StudentList from './components/StudentList';
 
 // 学生数据
-const STU_DATA = [
-  { "id": "1", "attributes": { "name": "张三", "age": 18, "gender": "男", "address": "北京" } },
-  { "id": "2", "attributes": { "name": "李四", "age": 20, "gender": "女", "address": "上海" } },
-  { "id": "3", "attributes": { "name": "王五", "age": 22, "gender": "男", "address": "广州" } },
-  { "id": "4", "attributes": { "name": "赵六", "age": 24, "gender": "女", "address": "深圳" } },
-]
+// const STU_DATA = [
+//   { "id": "1", "attributes": { "name": "张三", "age": 18, "gender": "男", "address": "北京" } },
+//   { "id": "2", "attributes": { "name": "李四", "age": 20, "gender": "女", "address": "上海" } },
+//   { "id": "3", "attributes": { "name": "王五", "age": 22, "gender": "男", "address": "广州" } },
+//   { "id": "4", "attributes": { "name": "赵六", "age": 24, "gender": "女", "address": "深圳" } },
+// ]
 
 const App = () => {
-  const [studData, setStudData] = useState(STU_DATA);
+  const [studData, setStudData] = useState([]);
+  // 添加一个 state 来记录数据是否正在加载中
+  const [isLoading, setIsLoading] = useState(false);
+
   /*
     组件一渲染需要向服务器发送请求加载数据
     http://localhost:1337/api/students
@@ -32,6 +35,8 @@ const App = () => {
           body: 请求的请求体信息
 
     */
+    // 设置 loading 为 true
+    setIsLoading(true);
 
     fetch('http://localhost:1337/api/students')
       .then(res => res.json())
@@ -39,6 +44,9 @@ const App = () => {
       .then(data => {
         console.log(data);
         setStudData(data.data);
+
+        // 设置 loading 为 false
+        setIsLoading(false);
       })
       .catch(err => {
         console.log(err);
@@ -47,7 +55,8 @@ const App = () => {
 
   return (
     <div className="App">
-      <StudentList students={studData} />
+      {!isLoading && <StudentList students={studData} />}
+      {isLoading && <div>数据正在加载中...</div>}
     </div>
   )
 }

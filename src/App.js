@@ -38,45 +38,64 @@ const App = () => {
 
     */
     // 设置 loading 为 true
-    setIsLoading(true);
+    // setIsLoading(true);
 
-    fetch('http://localhost:1337/api/students')
-      .then(res => {
-        // 判断状态码
+    // fetch('http://localhost:1337/api/students')
+    //   .then(res => {
+    //     // 判断状态码
+    //     if (res.ok) {
+    //       // 返回的 res 是一个 Response 对象，需要使用 json() 方法来获取数据
+    //       return res.json();
+    //     }
+    //     setIsLoading(false)
+    //     // 抛出错误
+    //     throw new Error('数据加载失败');
+
+    //   })
+    //   // 获取到数据
+    //   .then(data => {
+    //     console.log(data);
+    //     setStudData(data.data);
+
+    //     // 设置 loading 为 false
+    //     setIsLoading(false);
+    //   })
+    //   .catch(err => {
+    //     // 设置 loading 为 false
+    //     setIsLoading(false);
+
+    //     // 打印错误信息
+    //     console.log(err);
+
+    //     // 设置错误信息
+    //     setError(err.message);
+    //   })
+
+    const fetchData = async () => {
+      setIsLoading(true);
+      setError(null);
+      try {
+        const res = await fetch('http://localhost:1337/api/student');
         if (res.ok) {
-          // 返回的 res 是一个 Response 对象，需要使用 json() 方法来获取数据
-          return res.json();
+          const data = await res.json();
+          setStudData(data.data);
+        } else {
+          throw new Error('数据加载失败');
         }
-        setIsLoading(false)
-        // 抛出错误
-        throw new Error('数据加载失败');
-
-      })
-      // 获取到数据
-      .then(data => {
-        console.log(data);
-        setStudData(data.data);
-
-        // 设置 loading 为 false
-        setIsLoading(false);
-      })
-      .catch(err => {
-        // 设置 loading 为 false
-        setIsLoading(false);
-
-        // 打印错误信息
-        console.log(err);
-
-        // 设置错误信息
+      } catch (err) {
         setError(err.message);
-      })
+      } finally {
+        setIsLoading(false);
+      }
+    };
+    return fetchData
   }, [])
 
   return (
     <div className="App">
       {(!isLoading && !error) && <StudentList students={studData} />}
-      {isLoading && <div>数据正在加载中...</div>}
-      {error && <div>{error}</div>}
+      {isLoading && <p>数据正在加载中...</p>}
+      {error && <p>数据加载失败...</p>}
     </div>
   )
 }

@@ -11,6 +11,7 @@
     background-color: #fff;
     outline: none;
     transition: border-color 0.2s ease-in-out;
+    text-align: center;
 }
 
 .btn {
@@ -27,4 +28,19 @@
 
 .btn:hover {
     background-color: #0056b3;
+}
+
+.select {
+    margin-bottom: 10px;
+    padding: 5px;
+    width: 80%;
+    height: 50px;
+    box-sizing: border-box;
+    border: 1px solid #ccc;
+    border-radius: 4px;
+    font-size: 16px;
+    color: #333;
+    background-color: #fff;
+    outline: none;
+    transition: border-color 0.2s ease-in-out;
 }

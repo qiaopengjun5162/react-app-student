@@ -1,5 +1,6 @@
 import React from 'react'
 import Student from './Student'
+import StudentForm from './StudentForm'
 import classes from "./StudentList.module.css"
 
 const StudentList = (props) => {
@@ -18,6 +19,11 @@ const StudentList = (props) => {
             <tbody>
                 {props.students.map((student) => <Student key={student.id} student={student} />)}
             </tbody>
+
+
+            <tfoot>
+                <StudentForm />
+            </tfoot>
         </table>
     )
 }

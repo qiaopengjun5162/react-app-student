@@ -3,7 +3,6 @@ import StuContext from "../store/StuContext";
 import classes from "./StudentForm.module.css";
 
 const StudentForm = (props) => {
-    console.log(props);
     const [inputData, setInputData] = useState({
         name: props.student ? props.student.name : "",
         gender: props.student ? props.student.gender : "男",
@@ -42,6 +41,35 @@ const StudentForm = (props) => {
         }
     }, [ctx]);
 
+    // 创建一个更新学生的函数
+    const updateStudent = useCallback(async (id, newStudents) => {
+        setLoading(true);
+        try {
+            setError(null);
+            // 发送PUT请求到服务器
+            const response = await fetch(`http://localhost:1337/api/students/${id}`, {
+                method: "PUT",
+                headers: {
+                    "Content-Type": "application/json",
+                },
+                body: JSON.stringify({ "data": newStudents }),
+
+            })
+            if (!response.ok) {
+                throw new Error("更新学生失败");
+            }
+            const data = await response.json();
+            console.log(data);
+            ctx.fetchData();
+        }
+        catch (error) {
+            setError(error.message);
+        }
+        finally {
+            setLoading(false);
+        }
+    }, [ctx])
+
     const handleChange = (e) => {
         setInputData({
             ...inputData,
@@ -57,6 +85,14 @@ const StudentForm = (props) => {
         // 调用addStudent函数
         addStudent(inputData);
     };
+
+    const handleUpdate = (e) => {
+        e.preventDefault();
+        // 调用updateStudent函数
+        updateStudent(props.student.id, inputData);
+    }
+
+
 
     return (
         <>
@@ -100,7 +136,7 @@ const StudentForm = (props) => {
                 <td>
                     {props.student && <>
                         <button onClick={() => props.onCancel()}>Cancel</button>
-                        <button>Confirm</button>
+                        <button onClick={handleUpdate}>Confirm</button>
                     </>}
                     {!props.student &&
                         <button onClick={handleSubmit} className={classes.btn}>

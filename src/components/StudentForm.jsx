@@ -2,12 +2,13 @@ import React, { useCallback, useContext, useState } from "react";
 import StuContext from "../store/StuContext";
 import classes from "./StudentForm.module.css";
 
-const StudentForm = () => {
+const StudentForm = (props) => {
+    console.log(props);
     const [inputData, setInputData] = useState({
-        name: "",
-        gender: "男",
-        age: "",
-        address: "",
+        name: props.student ? props.student.name : "",
+        gender: props.student ? props.student.gender : "男",
+        age: props.student ? props.student.age : "",
+        address: props.student ? props.student.address : "",
     });
 
     const [loading, setLoading] = useState(false);
@@ -97,9 +98,15 @@ const StudentForm = () => {
                     />
                 </td>
                 <td>
-                    <button onClick={handleSubmit} className={classes.btn}>
-                        添加
-                    </button>
+                    {props.student && <>
+                        <button onClick={() => props.onCancel()}>Cancel</button>
+                        <button>Confirm</button>
+                    </>}
+                    {!props.student &&
+                        <button onClick={handleSubmit} className={classes.btn}>
+                            Add
+                        </button>
+                    }
                 </td>
             </tr>
             {loading && <tr><td colSpan={5}>加载中...</td></tr >}

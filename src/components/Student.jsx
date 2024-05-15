@@ -1,38 +1,45 @@
-import React, { useCallback, useContext, useState } from 'react';
+import React, { useContext, useState } from 'react';
+import useFetch from '../hooks/useFetch';
 import StuContext from '../store/StuContext';
 import StudentForm from './StudentForm';
 
 
 const Student = ({ student: { id, attributes: { name, age, gender, address } } }) => {
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    // const [loading, setLoading] = useState(false);
+    // const [error, setError] = useState(null);
     const [isEdit, setIsEdit] = useState(false);
 
     const ctx = useContext(StuContext)
 
-    const deleteStudent = useCallback(async () => {
-        try {
-            setLoading(true);
-            setError(null);
-            // delete student
-            const response = await fetch(`http://localhost:1337/api/students/${id}`, {
-                method: 'DELETE'
-            })
-            console.log(response)
-            if (!response.ok) {
-                throw new Error(`删除数据失败...: ${response.statusText}`);
-            }
-            const data = await response.json();
-            console.log(data)
-            // 删除成功后需要触发父组件的重新获取数据 列表刷新
-            ctx.fetchData()
+    const { loading, error, fetchData: deleteStudent } = useFetch({
+        url: `students/${id}`,
+        method: 'DELETE',
+    }, ctx.fetchData)
 
-        } catch (error) {
-            setError(error)
-        } finally {
-            setLoading(false)
-        }
-    }, [id, ctx])
+    // const deleteStudent = useCallback(async () => {
+    //     try {
+    //         setLoading(true);
+    //         setError(null);
+    //         // delete student
+    //         const response = await fetch(`http://localhost:1337/api/students/${id}`, {
+    //             method: 'DELETE'
+    //         })
+    //         console.log(response)
+    //         if (!response.ok) {
+    //             throw new Error(`删除数据失败...: ${response.statusText}`);
+    //         }
+    //         const data = await response.json();
+    //         console.log(data)
+    //         // 删除成功后需要触发父组件的重新获取数据 列表刷新
+    //         ctx.fetchData()
+
+    //     } catch (error) {
+    //         setError(error)
+    //     } finally {
+    //         setLoading(false)
+    //     }
+    // }, [id, ctx])
+
     // delete student
     const deleteHandler = () => {
         // delete student

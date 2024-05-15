@@ -1,4 +1,5 @@
-import React, { useCallback, useContext, useState } from "react";
+import React, { useContext, useState } from "react";
+import useFetch from "../hooks/useFetch";
 import StuContext from "../store/StuContext";
 import classes from "./StudentForm.module.css";
 
@@ -10,65 +11,75 @@ const StudentForm = (props) => {
         address: props.student ? props.student.address : "",
     });
 
-    const [loading, setLoading] = useState(false);
-    const [error, setError] = useState(null);
+    // const [loading, setLoading] = useState(false);
+    // const [error, setError] = useState(null);
     const ctx = useContext(StuContext);
 
+    const { loading, error, fetchData: addOrUpdateStudent } = useFetch({
+        url: props.student ? `students/${props.student.id}` : "students",
+        method: props.student ? "PUT" : "POST",
+        headers: {
+            "Content-Type": "application/json",
+        },
+    }, ctx.fetchData
+    );
+
+
     // 创建一个添加学生的函数
-    const addStudent = useCallback(async (inputData) => {
-        setLoading(true);
-        try {
-            setError(null);
-            // 发送POST请求到服务器
-            const response = await fetch("http://localhost:1337/api/students", {
-                method: "POST",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ "data": inputData }),
-            });
-            console.log(response);
-            if (!response.ok) {
-                throw new Error("添加学生失败");
-            }
-            const data = await response.json();
-            console.log(data);
-            ctx.fetchData();
-        } catch (error) {
-            setError(error.message);
-        } finally {
-            setLoading(false);
-        }
-    }, [ctx]);
+    // const addStudent = useCallback(async (inputData) => {
+    //     setLoading(true);
+    //     try {
+    //         setError(null);
+    //         // 发送POST请求到服务器
+    //         const response = await fetch("http://localhost:1337/api/students", {
+    //             method: "POST",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify({ "data": inputData }),
+    //         });
+    //         console.log(response);
+    //         if (!response.ok) {
+    //             throw new Error("添加学生失败");
+    //         }
+    //         const data = await response.json();
+    //         console.log(data);
+    //         ctx.fetchData();
+    //     } catch (error) {
+    //         setError(error.message);
+    //     } finally {
+    //         setLoading(false);
+    //     }
+    // }, [ctx]);
 
     // 创建一个更新学生的函数
-    const updateStudent = useCallback(async (id, newStudents) => {
-        setLoading(true);
-        try {
-            setError(null);
-            // 发送PUT请求到服务器
-            const response = await fetch(`http://localhost:1337/api/students/${id}`, {
-                method: "PUT",
-                headers: {
-                    "Content-Type": "application/json",
-                },
-                body: JSON.stringify({ "data": newStudents }),
+    // const updateStudent = useCallback(async (id, newStudents) => {
+    //     setLoading(true);
+    //     try {
+    //         setError(null);
+    //         // 发送PUT请求到服务器
+    //         const response = await fetch(`http://localhost:1337/api/students/${id}`, {
+    //             method: "PUT",
+    //             headers: {
+    //                 "Content-Type": "application/json",
+    //             },
+    //             body: JSON.stringify({ "data": newStudents }),
 
-            })
-            if (!response.ok) {
-                throw new Error("更新学生失败");
-            }
-            const data = await response.json();
-            console.log(data);
-            ctx.fetchData();
-        }
-        catch (error) {
-            setError(error.message);
-        }
-        finally {
-            setLoading(false);
-        }
-    }, [ctx])
+    //         })
+    //         if (!response.ok) {
+    //             throw new Error("更新学生失败");
+    //         }
+    //         const data = await response.json();
+    //         console.log(data);
+    //         ctx.fetchData();
+    //     }
+    //     catch (error) {
+    //         setError(error.message);
+    //     }
+    //     finally {
+    //         setLoading(false);
+    //     }
+    // }, [ctx])
 
     const handleChange = (e) => {
         setInputData({
@@ -79,17 +90,16 @@ const StudentForm = (props) => {
 
     const handleSubmit = (e) => {
         e.preventDefault();
-
         inputData.age = parseInt(inputData.age);
-        console.log(inputData);
         // 调用addStudent函数
-        addStudent(inputData);
+        addOrUpdateStudent(inputData);
     };
 
     const handleUpdate = (e) => {
         e.preventDefault();
         // 调用updateStudent函数
-        updateStudent(props.student.id, inputData);
+        // updateStudent(props.student.id, inputData);
+        addOrUpdateStudent(inputData);
     }
 
 

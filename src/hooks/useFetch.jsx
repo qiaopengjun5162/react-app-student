@@ -17,23 +17,45 @@
 */
 import { useCallback, useState } from 'react';
 
-export default function useFetch() {
+// 自定义钩子函数
+// reqObj 请求参数
+/*
+    {
+        url: 请求的地址,
+        method: 请求的方法,
+        body: 请求的参数,
+        headers: 请求的头部
+    }
+    callback: 请求成功后的回调函数
+*/
+export default function useFetch(reqObj, callback) {
+    console.log('useFetch', reqObj);
     const [data, setData] = useState([]);
     const [loading, setLoading] = useState(false);
     const [error, setError] = useState(null);
 
-    const fetchData = useCallback(async () => {
-        setLoading(true);
-        setError(null);
+    const fetchData = useCallback(async (body) => {
         try {
-            const res = await fetch('http://localhost:1337/api/students');
+            setLoading(true);
+            setError(null);
+            const res = await fetch('http://localhost:1337/api/' + reqObj.url, {
+                method: reqObj.method || 'GET',
+                headers: reqObj.headers || {
+                    'Content-Type': 'application/json'
+                },
+                // body: (!reqObj.method || reqObj.method.toLowerCase() === 'get') ? null : JSON.stringify({ "data": body }),
+                body: body ? JSON.stringify({ "data": body }) : null
+            });
+            // 判断请求是否成功
             if (res.ok) {
                 const data = await res.json();
                 setData(data.data);
+                callback && callback();
             } else {
                 throw new Error('数据加载失败');
             }
         } catch (err) {
+            console.log(err);
             setError(err.message);
         } finally {
             setLoading(false);

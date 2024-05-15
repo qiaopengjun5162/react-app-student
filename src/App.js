@@ -13,7 +13,10 @@ import StudentContext from './store/StuContext';
 // ]
 
 const App = () => {
-  const { data: studData, loading, error, fetchData } = useFetch();
+  const { data: studData, loading, error, fetchData } = useFetch({
+    url: 'students',
+  }
+  );
 
 
   // // 添加一个 state 来记录学生数据

@@ -1,6 +1,7 @@
-import React, { useCallback, useEffect, useState } from 'react';
+import React, { useEffect } from 'react';
 import './App.css';
 import StudentList from './components/StudentList';
+import useFetch from './hooks/useFetch';
 import StudentContext from './store/StuContext';
 
 // 学生数据
@@ -12,34 +13,38 @@ import StudentContext from './store/StuContext';
 // ]
 
 const App = () => {
-  const [studData, setStudData] = useState([]);
-  // 添加一个 state 来记录数据是否正在加载中
-  const [isLoading, setIsLoading] = useState(false);
-  // 添加一个 state 来记录错误信息
-  const [error, setError] = useState(null);
+  const { data: studData, loading, error, fetchData } = useFetch();
 
-  /*
-    组件一渲染需要向服务器发送请求加载数据
-    http://localhost:1337/api/students
-  */
 
-  const fetchData = useCallback(async () => {
-    setIsLoading(true);
-    setError(null);
-    try {
-      const res = await fetch('http://localhost:1337/api/students');
-      if (res.ok) {
-        const data = await res.json();
-        setStudData(data.data);
-      } else {
-        throw new Error('数据加载失败');
-      }
-    } catch (err) {
-      setError(err.message);
-    } finally {
-      setIsLoading(false);
-    }
-  }, [])
+  // // 添加一个 state 来记录学生数据
+  // const [studData, setStudData] = useState([]);
+  // // 添加一个 state 来记录数据是否正在加载中
+  // const [isLoading, setIsLoading] = useState(false);
+  // // 添加一个 state 来记录错误信息
+  // const [error, setError] = useState(null);
+
+  // /*
+  //   组件一渲染需要向服务器发送请求加载数据
+  //   http://localhost:1337/api/students
+  // */
+
+  // const fetchData = useCallback(async () => {
+  //   setIsLoading(true);
+  //   setError(null);
+  //   try {
+  //     const res = await fetch('http://localhost:1337/api/students');
+  //     if (res.ok) {
+  //       const data = await res.json();
+  //       setStudData(data.data);
+  //     } else {
+  //       throw new Error('数据加载失败');
+  //     }
+  //   } catch (err) {
+  //     setError(err.message);
+  //   } finally {
+  //     setIsLoading(false);
+  //   }
+  // }, [])
 
   useEffect(() => {
     /*
@@ -105,8 +110,8 @@ const App = () => {
     <StudentContext.Provider value={{ fetchData }}>
       <div className="App">
         <button onClick={handleClick} className="btn">加载数据</button>
-        {(!isLoading && !error) && <StudentList students={studData} />}
-        {isLoading && <p>数据正在加载中...</p>}
+        {(!loading && !error) && <StudentList students={studData} />}
+        {loading && <p>数据正在加载中...</p>}
         {error && <p>数据加载失败...</p>}
       </div>
     </StudentContext.Provider>
